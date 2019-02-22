@@ -43,7 +43,7 @@ export default {
   methods: {
     register: function () {
       //发送请求
-      let host='http://127.0.0.1:8000/'
+      let host='http://127.0.0.1:8000/';
       let data=JSON.stringify({"name": this.rule_form.name,"passwd":this.rule_form.pwd})
       fetch(host+'user/register/', {
         method: 'POST',
@@ -58,14 +58,13 @@ export default {
         });
     },
     login: function () {
-      let host='http://127.0.0.1:8000/'
-      fetch(host+'usr/login',{
+      let host='http://127.0.0.1:8000/';
+      let data=JSON.stringify({"name":this.rule_form.name,"passwd":this.rule_form.pwd})
+      fetch(host+'user/login/',{
         method: 'POST',
-        name:this.rule_form.name,
-        passwd:this.rule_form.pwd
+        body:data
       }).then(response => {
           console.log(response)
-
         })
         .catch(error => {
             console.log(error);
