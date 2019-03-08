@@ -19,10 +19,11 @@
     </div>
 </template>
 <script scoped>
-
+import {register,login} from "../requests/user";
+import VueCookies from 'vue-cookies'
 export default {
   name: 'LogIn',
-  data () {
+  data() {
     return {
       rule_form: {
         name: '',
@@ -39,37 +40,54 @@ export default {
         ],
       }
     }
-    },
+  },
   methods: {
     register: function () {
-      //发送请求
-      let host='http://127.0.0.1:8000/';
-      let data=JSON.stringify({"name": this.rule_form.name,"passwd":this.rule_form.pwd})
-      fetch(host+'user/register/', {
-        method: 'POST',
-        body: data
-      }).then(response => {
-          console.log(response);
+      //发送请求register方法
+      this.$refs.ruleForm.validate((valid)=>{
+        if(valid){
+          register(this.rule_form.name,this.rule_form.pwd).then(data => {
+            if(data.success ==='true'){
+              console.log("注册成功")
+              let session=data.data.session;
+              VueCookies.set('token',session,1209600);
+              this.$router.push('/home');
+            }
+            else{
+              this.$message.error("注册失败")
+            }
+          })
+        }
+        else{
+          console.log("数据验证错误");
+          return false
+        }
+      })
 
-        })
-        .catch(error => {
-          console.log(error);
-
-        });
     },
     login: function () {
-      let host='http://127.0.0.1:8000/';
-      let data=JSON.stringify({"name":this.rule_form.name,"passwd":this.rule_form.pwd})
-      fetch(host+'user/login/',{
-        method: 'POST',
-        body:data
-      }).then(response => {
-          console.log(response)
-        })
-        .catch(error => {
-            console.log(error);
+      //发送login请求,请求调用login方法
+      this.$refs.ruleForm.validate((valid)=>{
+        if(valid){
+          login(this.rule_form.name,this.rule_form.pwd).then( data => {
+              if(data.success === 'true'){
+                console.log("登录成功")
+                let session=data.data.session;
+                VueCookies.set('token',session,1209600);
+                this.$router.push('/home');
+              }
+              else{
+                console.log(data.message)
+                this.$message.error("登录失败")
+              }
+            })
+        }
+        else{
+          console.log("数据验证有误");
+          return false;
+        }
 
-          })
+      });
     }
   }
 }
