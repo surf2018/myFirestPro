@@ -5,56 +5,49 @@
     </el-row>
     <div>
       <el-menu
-        default-active="2"
-        class="index-menu"
-        @open="handleOpen"
-        @close="handleClose">
-        <el-submenu index="1">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span>导航一</span>
-          </template>
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="1-1">选项1</el-menu-item>
-            <el-menu-item index="1-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="1-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="1-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="1-4-1">选项1</el-menu-item>
-          </el-submenu>
-        </el-submenu>
+        :default-active="activeIndex"
+        class="index-menu" @select="handleSelect" :collapse="isCollapse">
+        <el-menu-item index="1">
+          <i class="el-icon-menu"></i>
+          <span slot="title">接口</span>
+        </el-menu-item>
         <el-menu-item index="2">
           <i class="el-icon-menu"></i>
-          <span slot="title">导航二</span>
+          <span slot="title">任务</span>
         </el-menu-item>
         <el-menu-item index="3">
           <i class="el-icon-document"></i>
-          <span slot="title">导航三</span>
+          <span slot="title">mock</span>
         </el-menu-item>
         <el-menu-item index="4">
           <i class="el-icon-setting"></i>
-          <span slot="title">导航四</span>
+          <span slot="title">调试</span>
         </el-menu-item>
       </el-menu>
       <div class="index-content">
+        <servers></servers>
       </div>
   </div>
 </div>
 </template>
 <script >
   import {get_user} from "../requests/user";
-
-
+  import servers from "./servers";
   export default {
-  name: 'Index',
-  data() {
-    return {
-    current_user:{},
-    }
+    name: 'Index',
+    props:['tab'],
+    components:{servers,},
+    data() {
+      return {
+        current_user:{},
+        isCollapse:false,
+        activeIndex:"1",
+      }
+    },
+    methods:{
+      handleSelect:function(index,index_path) {
+        this.$router.push('/index/'+index)
+      },
   },
   mounted(){
     get_user().then(data => {

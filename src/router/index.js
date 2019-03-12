@@ -17,7 +17,13 @@ export default new Router({
     {
       path: '/home',
       name: 'Index',
-      component: Index
+      redirect:'/index/1',
+    },
+    {
+      path: '/index/:tab',
+      name: 'Index',
+      component: Index,
+      props:true,
     },
   ]
 })
