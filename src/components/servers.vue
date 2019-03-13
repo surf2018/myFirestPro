@@ -94,7 +94,7 @@
     min-height: 500px;
   }
   .tree-padding {
-    padding-top: 10px;
+    padding-top: 20px;
   }
   .interface-tree {
     width: 75%;

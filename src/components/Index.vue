@@ -79,6 +79,8 @@
   }
   .index-content {
     width: 80%;
+    float: right;
+    margin-top: -140px;
   }
 .body-status {
   margin-left: auto;
