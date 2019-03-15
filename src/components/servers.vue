@@ -34,7 +34,7 @@
       export default {
         data() {
           return {
-            data: [{
+            services_tree: [{
               label: '一级 1',
               children: [{
                 label: '二级 1-1',
@@ -69,7 +69,7 @@
                 }]
               }]
             }],
-            defaultProps: {
+            default_props: {
               children: 'children',
               label: 'label'
             }
@@ -92,6 +92,7 @@
     border-right: solid 1px #e6e6e6;
     padding: 10px 10px 0 5px;
     min-height: 500px;
+    margin-top:-150px;
   }
   .tree-padding {
     padding-top: 20px;
