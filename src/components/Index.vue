@@ -41,7 +41,7 @@
       return {
         current_user:{},
         isCollapse:false,
-        activeIndex:"1",
+        activeIndex:1,
       }
     },
     methods:{
