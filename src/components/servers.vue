@@ -1,7 +1,7 @@
 <template>
 <div class="services-main">
   <div class="services-tree">
-    <el-button type="primary" size="small">创建根服务</el-button>
+    <el-button type="primary" size="small" @click="create_root_server">创建根服务</el-button>
     <el-tree
       class="tree-padding"
       :data="services_tree"
@@ -28,56 +28,70 @@
   <div class="interface-tree">
     context
   </div>
+
+  <el-dialog
+    :title="this.create_service.title"
+    :visible.sync="this.create_service.dialogVisible"
+    width="30%"
+    :before-close="handleClose">
+    <el-form ref="create_service" :model="create_service" label-width="80px" :rules="create_service_rules" >
+      <el-form-item label="父节点" prop="parent" v-if="create_service.parent!==0">
+          {{ create_service.parent}}
+      </el-form-item>
+      <el-form-item label="服务名">
+        <el-input v-model="create_service.name" prop="name"></el-input>
+      </el-form-item>
+      <el-form-item label="服务描述">
+        <el-input type="textarea" v-model="create_service.desc" prop="desc"></el-input>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">创建</el-button>
+  </span>
+  </el-dialog>
 </div>
 </template>
     <script>
+      import {create_service,update_service,get_service,del_service} from "@/requests/servers";
+
       export default {
         data() {
           return {
-            services_tree: [{
-              label: '一级 1',
-              children: [{
-                label: '二级 1-1',
-                children: [{
-                  label: '三级 1-1-1'
-                }]
-              }]
-            }, {
-              label: '一级 2',
-              children: [{
-                label: '二级 2-1',
-                children: [{
-                  label: '三级 2-1-1'
-                }]
-              }, {
-                label: '二级 2-2',
-                children: [{
-                  label: '三级 2-2-1'
-                }]
-              }]
-            }, {
-              label: '一级 3',
-              children: [{
-                label: '二级 3-1',
-                children: [{
-                  label: '三级 3-1-1'
-                }]
-              }, {
-                label: '二级 3-2',
-                children: [{
-                  label: '三级 3-2-1'
-                }]
-              }]
-            }],
+            services_tree: [],
             default_props: {
               children: 'children',
               label: 'label'
+            },
+            create_service: {
+              title:"创建服务",
+              dialogVisible:false,
+              name:"",
+              desc:"",
+              parent:0,
+
+            },
+            create_service_rules:{
+              name: [
+                { required: true, message: '输入服务名', trigger: 'blur' },
+                { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+              ],
+              desc: [
+                { required: true, message: '请输入描述', trigger: 'blur' }
+              ],
             }
-          };
+          }
         },
         methods: {
           handleNodeClick(data) {
             console.log(data);
+          },
+          create_root_server() {
+              this.create_service.title = "创建服务",
+              this.create_service.dialogVisible=true,
+              this.create_service.name="",
+              this.create_service.desc="",
+              this.create_service.parent=0
           }
         }
       };

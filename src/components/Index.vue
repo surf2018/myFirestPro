@@ -57,7 +57,8 @@
       }else{
         this.$router.push('/login')
       }
-  })
+  });
+    this.activeIndex=this.tab;
   }
   }
 
