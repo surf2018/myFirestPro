@@ -123,23 +123,24 @@
 
 
           },
-          create_root_server() {
+          init_addService(){
               this.add_service.title = "创建服务",
               this.add_service.dialogVisible=true,
               this.add_service.name="",
-              this.add_service.desc="",
+              this.add_service.desc=""
+
+          },
+          create_root_server() {
+              this.init_addService(),
               this.add_service.parent=0,
               this.add_service.id=-1
               this.add_service.parent_name=""
           },
-          create_child_server(data){
-              this.add_service.title = "创建子服务",
-              this.add_service.dialogVisible=true,
-              this.add_service.name="",
-              this.add_service.desc="",
-              this.add_service.parent=data.id,
+          create_child_server(parent_data){
+              this.init_addService(),
+              this.add_service.parent=parent_data.id,
               this.add_service.id=-1
-              this.add_service.parent_name=""
+              this.add_service.parent_name=parent_data.name
           },
 
           submit_service(){
