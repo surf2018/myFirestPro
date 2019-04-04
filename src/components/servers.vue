@@ -32,7 +32,8 @@
   <el-dialog
     :title="this.add_service.title"
     :visible.sync="this.add_service.dialogVisible"
-    width="30%">
+    width="30%"
+    @close="closeDialog">
     <el-form ref="add_service" :model="add_service" label-width="80px" :rules="add_service_rules" >
       <el-form-item label="父节点" prop="parent" v-if="add_service.parent!==0">
           {{ add_service.parent_name}}
@@ -46,7 +47,7 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
     <el-button @click="cancel_dialog">取 消</el-button>
-    <el-button type="primary" @click="submit_service">创建</el-button>
+    <el-button type="primary" @click="submit_service">{{add_service.sub_name}}</el-button>
   </span>
   </el-dialog>
 </div>
@@ -70,7 +71,8 @@
               parent:0,
               mod:'add',
               id:-1,
-              parent_name:''
+              parent_name:'',
+              sub_name:'创建'
 
             },
             add_service_rules:{
@@ -101,6 +103,9 @@
           handleNodeClick(data) {
             console.log(data);
           },
+          closeDialog(){
+            this.add_service.dialogVisible=false
+          },
           cancel_dialog() {
               this.add_service.dialogVisible=false
           },
@@ -115,6 +120,9 @@
             }
             else if(ops=="edit"){
               console.log("编辑service")
+              this.init_editService(data)
+              this.edit_service()
+
 
             }
             else{
@@ -129,6 +137,15 @@
               this.add_service.name="",
               this.add_service.desc=""
 
+          },
+          init_editService(data){
+              this.add_service.title = "编辑服务",
+              this.add_service.dialogVisible=true,
+              this.add_service.name=data.name,
+              this.add_service.desc=data.description,
+              this.add_service.sub_name="编辑",
+              this.add_service.parent_name=data.parent_name,
+              this.add_service.parent=data.parent
           },
           create_root_server() {
               this.init_addService(),
@@ -173,7 +190,7 @@
             })
           },
           edit_service(){
-            update_service(this.add_service.id,this.add_service.name,this.add_service.desc,this.add_service.parent).then(data=>{
+            update_service(this.add_service.id,this.add_service.name,data.description,data.parent).then(data=>{
                 if(data.success===true){
 
                 }
