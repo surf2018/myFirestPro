@@ -16,7 +16,9 @@ export const post_code=function(url,params) {
 };
 
 export const put_code=function(url,params) {
+  console.log("url:"+url)
   let data = JSON.stringify(params);
+  console.log(data)
   let header={'token':VueCookies.get('token')}
   return fetch(host + url, {
     method: 'PUT',
