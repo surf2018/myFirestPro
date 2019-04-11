@@ -1,67 +1,134 @@
-<el-form ref="form" :model="form" label-width="80px">
-  <el-form-item label="活动名称">
-    <el-input v-model="form.name"></el-input>
-  </el-form-item>
-  <el-form-item label="活动区域">
-    <el-select v-model="form.region" placeholder="请选择活动区域">
-      <el-option label="区域一" value="shanghai"></el-option>
-      <el-option label="区域二" value="beijing"></el-option>
-    </el-select>
-  </el-form-item>
-  <el-form-item label="活动时间">
-    <el-col :span="11">
-      <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-    </el-col>
-    <el-col class="line" :span="2">-</el-col>
-    <el-col :span="11">
-      <el-time-picker placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-    </el-col>
-  </el-form-item>
-  <el-form-item label="即时配送">
-    <el-switch v-model="form.delivery"></el-switch>
-  </el-form-item>
-  <el-form-item label="活动性质">
-    <el-checkbox-group v-model="form.type">
-      <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-      <el-checkbox label="地推活动" name="type"></el-checkbox>
-      <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-      <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-    </el-checkbox-group>
-  </el-form-item>
-  <el-form-item label="特殊资源">
-    <el-radio-group v-model="form.resource">
-      <el-radio label="线上品牌商赞助"></el-radio>
-      <el-radio label="线下场地免费"></el-radio>
-    </el-radio-group>
-  </el-form-item>
-  <el-form-item label="活动形式">
-    <el-input type="textarea" v-model="form.desc"></el-input>
-  </el-form-item>
-  <el-form-item>
-    <el-button type="primary" @click="onSubmit">立即创建</el-button>
-    <el-button>取消</el-button>
-  </el-form-item>
-</el-form>
+<template>
+  <div>
+    <el-button tyype="primary" @click="create_interface">创建接口</el-button>
+    <el-table
+      :data="page_data"
+      style="width: 100%">
+      <el-table-column
+        prop="name"
+        label="名称"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="description"
+        label="描述"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="url"
+        label="URL">
+      </el-table-column>
+      <el-table-column
+        prop="method"
+        label="方法">
+      </el-table-column>
+      <el-table-column
+        prop="host"
+        label="域名">
+      </el-table-column>
+      <el-table-column
+        prop="ops"
+        label="操作">
+        <template slot-scope="scope">
+          <el-button @click="edit_interface(scope.row.id)" type="text" size="small">编辑</el-button>
+          <el-button @click="edit_interface(scope.row.id)" type="text" size="small">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="page-style">
+      <el-pagination
+        background
+        v-if="page.total!=0"
+        :page-size="page.page_size"
+        :current-page="page.current" @current-change="handleCurrentChange"
+        layout="prev, pager, next"
+        :total="page.total">
+
+      </el-pagination>
+    </div>
+    <el-dialog
+      :title="this.add_interface.title"
+      :visible.sync="this.add_service.dialogVisible"
+      width="30%"
+      @close="closeDialog">
+      <el-form ref="add_service" :model="add_interface" label-width="80px" :rules="add_interface_rules" >
+        <el-form-item label="父节点" prop="parent" v-if="add_service.parent!==0">
+          {{ add_service.parent_name}}
+        </el-form-item>
+        <el-form-item label="接口名">
+          <el-input v-model="add_service.name" prop="name"></el-input>
+        </el-form-item>
+        <el-form-item label="接口描述">
+          <el-input type="textarea" v-model="add_service.desc" prop="desc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="cancel_dialog">取 消</el-button>
+    <el-button type="primary" @click="submit_service">{{add_service.sub_name}}</el-button>
+  </span>
+    </el-dialog>
+  </div>
+</template>
+
 <script>
   export default {
+    props:['interfaces','service_id'],
     data() {
       return {
-        form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        }
+        page: {
+          total:0,
+          page_size:10,
+          current:1,
+        },
+        add_interface: {
+          title: "创建根服务",
+          dialogVisible: false,
+          name: "",
+          desc: "",
+          parent: 0,
+          mod: 'add',
+          id: -1,
+          parent_name: '',
+          sub_name: '创建'
+
+        },
+        add_interface_rules: {
+          name: [
+            {required: true, message: '输入服务名', trigger: 'blur'},
+            {min: 3, max: 200, message: '长度在 3 到 5 个字符', trigger: 'blur'}
+          ],
+          desc: [
+            {required: true, message: '请输入描述', trigger: 'blur'}
+          ],
+        },
       }
     },
-    methods: {
-      onSubmit() {
-        console.log('submit!');
+    computed:{
+      page_data: function () {
+        let start=(this.page.current-1)*this.page.size;
+        let end = this.page.total;
+        if(this.page.total>this.page.current*this.page_size){
+          end=this.page.current*this.page.page_size
+        }else{
+          end=this.page.total
+        }
+
+
+
+      }
+    },
+    methods:{
+      create_interface(){
+        console.log("创建接口")
+      },
+      handleCurrentChange(val){
+
       }
     }
   }
 </script>
+<style scoped>
+  .page-style {
+    text-align: right;
+  }
+</style>

@@ -1,3 +1,4 @@
+<script src="../requests/servers.js"></script>
 <template>
 <div class="services-main">
   <div class="services-tree">
@@ -10,7 +11,7 @@
       default-expand-all
       :expand-on-click-node="false"
       @node-drop="handleDrop"
-      @node-clic="click_service"
+      @node-click="select_service"
       draggable
       >
       <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -60,8 +61,9 @@
 </template>
     <script>
       import {create_service,update_service,get_service,del_service,get_service_interface} from "@/requests/servers";
-
+      import interface_list from "./interface/interface_list";
       export default {
+        components:{interface_list},
         data() {
           return {
             services_tree: [],
@@ -90,13 +92,19 @@
                 {required: true, message: '请输入描述', trigger: 'blur'}
               ],
             },
-            service_id:""
+            service_id:"",
+            service_interfaces:[]
           }
         },
         created() {
           this.get_services_fun();
         },
         methods: {
+          select_service(data){
+            console.log("点击服务")
+            this.service_id=data.id
+            this.get_interface_fun()
+          },
           get_services_fun() {
             get_service().then(data => {
               if (data.success === 'true') {
@@ -108,6 +116,19 @@
           },
           handleNodeClick(data) {
             console.log(data);
+          },
+          get_interface_fun(){
+            get_service_interface(this.service_id).then(data=>{
+             if(data.success==='true'){
+               console.log("展示服务的tree")
+             }
+             else{
+               this.$message.error(data.message)
+             }
+            })
+          },
+          update_service_interfaces(){
+            this.get_interface_fun()
           },
           handleDrop(draggingNode, dropNode, dropType, ev) {
             console.log('tree drop: ', dropNode.label, dropType);
@@ -131,7 +152,6 @@
               }
 
             })
-
           },
           drag_server(node1,node2,dropType) {
             if(dropType=="inner"){
