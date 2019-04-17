@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/Login'
 import Index from '@/components/Index'
+import edit_interface from '@/components/interface/edit_interface'
 
 Vue.use(Router)
 
@@ -25,5 +26,12 @@ export default new Router({
       component: Index,
       props:true,
     },
+    {
+      path:'/add/interface',
+      name:'add interface',
+      component: edit_interface,
+      props:true,
+
+    }
   ]
 })

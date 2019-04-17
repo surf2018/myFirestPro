@@ -38,7 +38,7 @@
     <div class="page-style">
       <el-pagination
         background
-        v-if="page.total!=0"
+        v-if="page.total !== 0"
         :page-size="page.page_size"
         :current-page="page.current" @current-change="handleCurrentChange"
         layout="prev, pager, next"
@@ -46,27 +46,6 @@
 
       </el-pagination>
     </div>
-    <el-dialog
-      :title="this.add_interface.title"
-      :visible.sync="this.add_service.dialogVisible"
-      width="30%"
-      @close="closeDialog">
-      <el-form ref="add_service" :model="add_interface" label-width="80px" :rules="add_interface_rules" >
-        <el-form-item label="父节点" prop="parent" v-if="add_service.parent!==0">
-          {{ add_service.parent_name}}
-        </el-form-item>
-        <el-form-item label="接口名">
-          <el-input v-model="add_service.name" prop="name"></el-input>
-        </el-form-item>
-        <el-form-item label="接口描述">
-          <el-input type="textarea" v-model="add_service.desc" prop="desc"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="cancel_dialog">取 消</el-button>
-    <el-button type="primary" @click="submit_service">{{add_service.sub_name}}</el-button>
-  </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -80,28 +59,11 @@
           page_size:10,
           current:1,
         },
-        add_interface: {
-          title: "创建根服务",
-          dialogVisible: false,
-          name: "",
-          desc: "",
-          parent: 0,
-          mod: 'add',
-          id: -1,
-          parent_name: '',
-          sub_name: '创建'
-
-        },
-        add_interface_rules: {
-          name: [
-            {required: true, message: '输入服务名', trigger: 'blur'},
-            {min: 3, max: 200, message: '长度在 3 到 5 个字符', trigger: 'blur'}
-          ],
-          desc: [
-            {required: true, message: '请输入描述', trigger: 'blur'}
-          ],
-        },
       }
+    },
+    created(){
+      this.page.total=this.interfaces.length;
+      this.page.current=1;
     },
     computed:{
       page_data: function () {
@@ -112,16 +74,22 @@
         }else{
           end=this.page.total
         }
-
-
-
       }
     },
     methods:{
       create_interface(){
-        console.log("创建接口")
+        console.log("创建接口");
+        console.log(this.service_id);
+        window.open('/add/interface?service='+this.service_id);
       },
       handleCurrentChange(val){
+        console.log(`当前页: ${val}`);
+      }
+    },
+    watch:{
+      interfaces:function () {
+        this.page.total=this.interfaces.length;
+
 
       }
     }

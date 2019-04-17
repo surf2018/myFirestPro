@@ -12,6 +12,7 @@
       :expand-on-click-node="false"
       @node-drop="handleDrop"
       @node-click="select_service"
+      highlight-current
       draggable
       >
       <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -117,16 +118,6 @@
           handleNodeClick(data) {
             console.log(data);
           },
-          get_interface_fun(){
-            get_service_interface(this.service_id).then(data=>{
-             if(data.success==='true'){
-               console.log("展示服务的tree")
-             }
-             else{
-               this.$message.error(data.message)
-             }
-            })
-          },
           update_service_interfaces(){
             this.get_interface_fun()
           },
@@ -147,6 +138,7 @@
             get_service_interface(this.service_id).then(data=>{
               if(data.success==='true'){
                 console.log("获得服务接口")
+                this.service_interfaces=data.data;
               }else{
                 this.$message.error(data.message)
               }
