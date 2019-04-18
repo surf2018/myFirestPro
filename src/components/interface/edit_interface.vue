@@ -119,13 +119,14 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="submit_form('rule_form')">{{-1 !== form.interface_id ? '更新':'创建'}}</el-button>
+        <el-button type="primary" @click="submit_form('form')">{{-1 !== form.interface_id ? '更新':'创建'}}</el-button>
         <el-button>取消</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
     <script>
+
       export default {
         name:"edit_interface",
         components:{
@@ -195,14 +196,54 @@
             require('brace/theme/chrome');
             require('brace/snippets/javascript') //snippet
           },
+          //添加参数
           add_form_parameter(){
             this.form_parameter.push({
                 'key':'',
                 'value':'',
                 'type':'string'
             })
-          }
+          },
+          //删除参数
+          delete_form_parameter(index){
+            this.form_parameter.splice(index,1,null)
+          },
+          //增加json断言
+          add_json_assertion(){
+            this.json_assertion.push({
+              'key':'',
+              'value':'',
+              'type':'string',
+              'include':'yes'
+            })
+          },
 
+          //删除json断言
+          delete_json_assertion(index){
+            this.json_assertion.splice(index,1,null)
+          },
+
+          //增加文本断言
+          add_text_assertion(index) {
+            this.text_assertion.push({
+              'key': '',
+              'include': 'yes'
+            })
+          },
+        //删除文本断言
+          delete_text_assertion(index){
+            this.text_assertion.splice(index,1,null)
+          },
+          submit_form(form){
+            this.$refs[form].validate((valid) => {
+              if (valid) {
+                alert('submit!');
+              } else {
+                console.log('error submit!!');
+                return false;
+              }
+            });
+          }
         }
       }
     </script>
