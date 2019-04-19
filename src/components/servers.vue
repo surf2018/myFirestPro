@@ -105,6 +105,7 @@
             console.log("点击服务")
             this.service_id=data.id
             this.get_interface_fun()
+
           },
           get_services_fun() {
             get_service().then(data => {
@@ -128,10 +129,6 @@
             console.log("父节点重新设置")
             console.log(dropNode.data)
             this.drag_server(draggingNode,dropNode,dropType)
-          },
-          click_service(data){
-            this.service_id=data.id;
-            this.get_interface_fun();
           },
           get_interface_fun(){
             console.log("get 接口,对应服务id",this.service_id)

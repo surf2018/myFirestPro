@@ -18,6 +18,5 @@ export const del_service = function(sid){
 
 };
 export const get_service_interface=function (sid) {
-  return get_code(server_url+sid)
-
+  return get_code(server_url+sid+'/interfaces')
 }
