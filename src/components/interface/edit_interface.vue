@@ -147,9 +147,9 @@
               parameter: {},
 
               form_parameter: [],
-              json_parameter: '{}',
 
               response_type: 'json',
+              json_response:{},
               response: '{}',
               interface_id: -1,
               service_id: -1,
@@ -187,6 +187,35 @@
           }
         },
         methods: {
+          check_edit_interface_data(){
+            //数据检验
+            //处理header
+            try{
+              JSON.parse(this.header)
+            }catch (e) {
+              return "header不是json格式"
+            }
+            //处理入参
+            if(this.form.parameter_type==='json'){
+              try{
+                JSON.parse(this.json_parameter)
+              }catch (e) {
+                return "入参数不是json格式"
+              }
+            }
+            //处理出参
+            if(this.form.response_type==='json'){
+              try{
+                JSON.parse(this.json_response)
+              }catch (e) {
+                return "出参不是json格式"
+              }
+            }
+            if(!this.$route.query.service){
+              return "没有传递service的id"
+            }
+            return 'ok';
+          },
           onSubmit() {
             console.log('submit!');
           },
@@ -237,7 +266,11 @@
           submit_form(form){
             this.$refs[form].validate((valid) => {
               if (valid) {
-                alert('submit!');
+                let result=check_edit_interface_data();
+                if(result=='ok'){
+                  console.log("check_edit_interface_data ok")
+                  
+                }
               } else {
                 console.log('error submit!!');
                 return false;
