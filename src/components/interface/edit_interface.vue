@@ -126,6 +126,7 @@
   </div>
 </template>
     <script>
+      import {create_interface,update_interface,del_interface,get_interfaces} from "@/requests/interfaces";
 
       export default {
         name:"edit_interface",
@@ -146,11 +147,9 @@
               parameter_type: 'json',
               parameter: {},
 
-              form_parameter: [],
-
               response_type: 'json',
-              json_response:{},
-              response: '{}',
+              response: {},
+
               interface_id: -1,
               service_id: -1,
               assertion: [],
@@ -178,6 +177,7 @@
             title: "创建接口",
             header: '{}',
             json_parameter: '{}',
+            form_parameter:[],
 
             text_response: '',
             json_response: '',
@@ -186,7 +186,27 @@
             text_assertion: [],
           }
         },
+        created(){
+          let interface_id=this.$router.query.interface;
+          if(interface_id){
+            //编辑接口
+            this.title="编辑接口"
+            this.form.interface_id=Number(interface_id);
+            this.get_interface_detail()
+
+          }
+          else{
+            //创建接口
+            this.title="创建接口"
+          }
+        },
         methods: {
+          get_interface_detail(){
+              get_interfaces().then(data=>{
+
+              })
+            }
+          },
           check_edit_interface_data(){
             //数据检验
             //处理header
@@ -263,13 +283,76 @@
           delete_text_assertion(index){
             this.text_assertion.splice(index,1,null)
           },
+          //构造请求数据
+          get_edit_interface_data(){
+            //处理入参
+            if(this.form.parameter_type==='json'){
+              this.form.parameter=JSON.parse(this.json_parameter)
+            }else{
+              //form形式参数
+              this.form.parameter=[]
+              for(let i=0;i<this.form_parameter.length;i++){
+                if(this.form_parameter[i].value!=='' && this.form_parameter[i].key!==''){
+                  this.form.form_parameter.push(this.form_parameter[i])
+                }
+              }
+            }
+            //处理出参
+            if(this.form.response_type==='json'){
+              this.form.response=JSON.parse(this.json_response)
+            }else{
+              this.form.response={
+                text:this.text_response
+              }
+            }
+            //处理header
+            this.form.header=JSON.parse(this.header);
+            //处理json断言
+            this.form.assertion=[]
+            for(let i=0;i<this.json_assertion.length;i++){
+              if(this.json_assertion[i].key!=='' && this.json_assertion[i].value!==''){
+                this.form.assertion.push(this.json_assertion[i])
+              }
+            }
+            //处理text断言
+            for(let i=0;i<this.text_assertion.length;i++){
+              if(this.text_assertion[i].key!==''){
+                this.form.assertion.push(this.text_assertion[i])
+              }
+            }
+            //处理服务id
+            this.form.service_id=Number(this.$route.query.service)//处理成整型
+
+            return this.form;
+      },
           submit_form(form){
             this.$refs[form].validate((valid) => {
               if (valid) {
-                let result=check_edit_interface_data();
+                let result = this.check_edit_interface_data();
                 if(result=='ok'){
                   console.log("check_edit_interface_data ok")
-                  
+                  //得到interface的data
+                  let data=this.get_edit_interface_data();
+                  if(this.form.interface_id==='-1'){
+                    //创建interface
+                      create_infterface(data).then(data=>{
+                        if(data.success==='true'){
+                          this.$message.info("创建接口成功")
+                        }else{
+                          this.$message.info("创建接口失败")
+                        }
+                      })
+                  }else{
+                    console.log("编辑接口")
+                    update_interface(data).then(data=>{
+                      if(data.success==='true'){
+                        this.$message.info("编辑接口成功")
+                      }else{
+                        this.$message.info("编辑接口失败")
+                      }
+                    })
+                }
+
                 }
               } else {
                 console.log('error submit!!');
@@ -277,7 +360,6 @@
               }
             });
           }
-        }
       }
     </script>
 
