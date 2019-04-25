@@ -126,6 +126,7 @@
   </div>
 </template>
     <script>
+      import {create_interface,update_interface,del_interface,get_interfaces} from "../../requests/interfaces";
 
       export default {
         name:"edit_interface",
@@ -141,7 +142,7 @@
 
               host: '',
               url: '',
-              header: {},
+              header: '{}',
 
               parameter_type: 'json',
               parameter: {},
@@ -149,7 +150,7 @@
               form_parameter: [],
 
               response_type: 'json',
-              json_response:{},
+              json_response:'{}',
               response: '{}',
               interface_id: -1,
               service_id: -1,
@@ -180,13 +181,16 @@
             json_parameter: '{}',
 
             text_response: '',
-            json_response: '',
+            json_response: '{}',
 
             json_assertion: [],
             text_assertion: [],
           }
         },
         methods: {
+          // back(){
+          //   this.$router.go(-1);
+          // },
           check_edit_interface_data(){
             //数据检验
             //处理header
@@ -263,13 +267,75 @@
           delete_text_assertion(index){
             this.text_assertion.splice(index,1,null)
           },
+          //构造数据
+          get_edit_interface_data(){
+            //处理入参
+            if ('json' === this.form.parameter_type) {
+              this.form.parameter = JSON.parse(this.json_parameter);
+            } else {
+              //form形式
+              this.form.parameter = [];
+              for (let i = 0; i < this.form_parameter.length; i++) {
+                if ("" !== this.form_parameter[i].value && "" !== this.form_parameter[i].key) {
+                  this.form.parameter.push(this.form_parameter[i]);
+                }
+              }
+            }
+            //处理出参
+            if ('json' === this.form.response_type) {
+              this.form.response = JSON.parse(this.json_response);
+            } else {
+              this.form.response = {
+                text: this.text_response
+              }
+            }
+            //处理header
+            this.form.header = JSON.parse(this.header);
+            //处理json的断言
+            this.form.assertion = [];
+            for (let i = 0; i < this.json_assertion.length; i++) {
+              if ("" !== this.json_assertion[i].value && "" !== this.json_assertion[i].key) {
+                this.form.assertion.push(this.json_assertion[i]);
+              }
+            }
+            //处理text的断言
+            for (let i = 0; i < this.text_assertion.length; i++) {
+              if ("" !== this.text_assertion[i].key) {
+                this.form.assertion.push(this.text_assertion[i]);
+              }
+            }
+            this.form.service_id = Number(this.$route.query.service); //这是字符串，所以需要转类型
+            return this.form;
+          },
           submit_form(form){
             this.$refs[form].validate((valid) => {
               if (valid) {
-                let result=check_edit_interface_data();
+                let result=this.check_edit_interface_data();
+                console.log(result)
                 if(result=='ok'){
-                  console.log("check_edit_interface_data ok")
-                  
+                  console.log("检验ok")
+                  //获取数据
+                  let data = this.get_edit_interface_data();
+                  console.log(data)
+                  if(this.form.interface_id !==-1){
+                    console.log("编辑interface")
+                    update_interface(this.form.interface_id,data).then(data=>{
+                      if(data.success==='ture') {
+                        this.$message.success("编辑接口成功")
+                      }else{
+                        this.$message.error(data.message)
+                      }
+                    })
+                  }else{
+                    console.log("创建interface")
+                    create_interface(data).then(data=>{
+                      if(data.success==='true'){
+                        this.$message.success("创建接成功")
+                      }else{
+                        this.$message.error(data.message)
+                      }
+                    })
+                  }
                 }
               } else {
                 console.log('error submit!!');
