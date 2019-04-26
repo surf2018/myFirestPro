@@ -32,6 +32,13 @@ export default new Router({
       component: edit_interface,
       props:true,
 
+    },
+    {
+      path:'/edit/interface',
+      name:'edit interface',
+      component: edit_interface,
+      props:true,
+
     }
   ]
 })

@@ -139,7 +139,6 @@
               }else{
                 this.$message.error(data.message)
               }
-
             })
           },
           drag_server(node1,node2,dropType) {

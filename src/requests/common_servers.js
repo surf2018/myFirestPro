@@ -45,7 +45,7 @@ export const get_code=function (url) {
 export const del_code=function (url) {
   let header={'token':VueCookies.get('token')}
   return fetch(host+url,{
-    method:'GET',
+    method:'DELETE',
     headers:header,
     credentials:"include"
   }).then(response => {

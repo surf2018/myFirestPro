@@ -31,7 +31,7 @@
         label="操作">
         <template slot-scope="scope">
           <el-button @click="edit_interface(scope.row.id)" type="text" size="small">编辑</el-button>
-          <el-button @click="edit_interface(scope.row.id)" type="text" size="small">删除</el-button>
+          <el-button @click="del_interface(scope.row.id)" type="text" size="small">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,6 +50,8 @@
 </template>
 
 <script>
+  import {delete_interface} from "../../requests/interfaces";
+
   export default {
     props:['interfaces','service_id'],
     data() {
@@ -74,6 +76,17 @@
         }else{
           end=this.page.total
         }
+        let ret=[];
+        for (let i=0;i<this.interfaces.length;i++){
+          ret.push(this.interfaces[i])
+        }
+        return ret;
+      }
+    },
+    watched:{
+      interfaces:function () {
+        this.page.total=this.interfaces.length
+        this.page.current=1;
       }
     },
     methods:{
@@ -81,6 +94,33 @@
         console.log("创建接口");
         console.log(this.service_id);
         window.open('/add/interface?service='+this.service_id);
+      },
+      edit_interface(interface_id){
+        // console.log("编辑接口");
+        // console.log(interface_id);
+        window.open('/edit/interface?service='+this.service_id+"&interface="+interface_id);
+      },
+      del_interface(interface_id) {
+        this.$confirm('此操作将永久删除接口, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delete_interface(interface_id).then(data => {
+            console.log("删除接口",interface_id)
+            if (data.success === 'true') {
+              this.$message.success("删除成功")
+              this.$emit('update',{})
+            } else {
+              this.$message.error(data.message)
+            }
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
+        })
       },
       handleCurrentChange(val){
         console.log(`当前页: ${val}`);

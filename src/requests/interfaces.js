@@ -15,7 +15,7 @@ export const get_interfaces = function(interface_id){
   return get_code(interface_url+interface_id)
 };
 //删除接口
-export const del_interface = function(interface_id){
+export const delete_interface = function(interface_id){
   return del_code(interface_url+interface_id)
 
 };
