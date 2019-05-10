@@ -96,8 +96,8 @@
         window.open('/add/interface?service='+this.service_id);
       },
       edit_interface(interface_id){
-        // console.log("编辑接口");
-        // console.log(interface_id);
+        console.log("接口列表,编辑接口");
+        console.log(interface_id);
         window.open('/edit/interface?service='+this.service_id+"&interface="+interface_id);
       },
       del_interface(interface_id) {

@@ -187,12 +187,18 @@
             text_assertion: [],
           }
         },
+
         created(){
-          let interface_id=this.$router.query.interface;
-          console.log("interface",interface_id)
+          let interface_id=this.$route.query.interface;
+          // console.log("interface",interface_id)
           if(interface_id){
             //编辑接口
             this.title="编辑接口"
+            //获取接口信息
+            this.form.interface_id=interface_id
+            this.get_interface_detail();
+
+
           }else{
             console.log("创建接口")
           }
@@ -202,6 +208,13 @@
           // back(){
           //   this.$router.go(-1);
           // },
+          get_interface_detail(){
+            console.log("get interface detail")
+            get_interfaces(this.form.interface_id).then(data=>{
+              console.log(data)
+
+          })
+          },
           check_edit_interface_data(){
             //数据检验
             //处理header
